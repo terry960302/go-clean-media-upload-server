@@ -1,15 +1,19 @@
 package usecase
 
 import (
-	"errors"
+	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"media-upload-server/adapter/repository"
+	"media-upload-server/config"
 	"media-upload-server/domain"
 	"mime/multipart"
-	"os"
 	"sort"
 	"sync"
+
+	"cloud.google.com/go/storage"
+	"github.com/labstack/echo/v4"
 )
 
 type ImageMetadataUsecase struct {
@@ -29,14 +33,14 @@ type UploadImagesRes struct {
 	err   error
 }
 
-func (i *ImageMetadataUsecase) UploadImages(fileHeaders []*multipart.FileHeader) []string {
+func (i *ImageMetadataUsecase) UploadImages(fileHeaders []*multipart.FileHeader, ctx echo.Context) []string {
 
 	uploadResChan := make(chan UploadImagesRes)
 	var wg sync.WaitGroup
 	wg.Add(len(fileHeaders))
 
 	for index, header := range fileHeaders {
-		go uploadImage(&wg, index, header, uploadResChan)
+		go uploadImage(ctx, &wg, index, header, uploadResChan)
 	}
 
 	responses := []UploadImagesRes{}
@@ -56,9 +60,91 @@ func (i *ImageMetadataUsecase) UploadImages(fileHeaders []*multipart.FileHeader)
 				return urls
 			}
 		default:
-			fmt.Println("No channel is ready")
+			fmt.Println("[UploadImages] No channel is ready")
 		}
 	}
+}
+
+func uploadImage(ctx echo.Context, wg *sync.WaitGroup, index int, header *multipart.FileHeader, uploadResChan chan UploadImagesRes) {
+	defer wg.Done()
+	// defer os.Remove(header.Filename)
+
+	multipartFile, err := header.Open()
+	if err != nil {
+		log.Fatal(err)
+		uploadResChan <- UploadImagesRes{
+			index: index,
+			url:   "",
+			err:   err,
+		}
+		return
+	}
+	defer multipartFile.Close()
+
+	// Method1 : [File to Buffer] //
+	//////////////
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, multipartFile); err != nil {
+		uploadResChan <- UploadImagesRes{
+			index: index,
+			url:   "",
+			err:   err,
+		}
+		return
+	}
+	//////////////
+
+	// Method2 : [Download File obj on Server] //
+	//////////////
+	// file, ok := multipartFile.(*os.File)
+	// if !ok {
+	// 	if err != nil {
+	// 		var err error = errors.New("Could not convert multipart.File to os.File")
+	// 		log.Fatal(err)
+	// 		uploadResChan <- UploadImagesRes{
+	// 			index: index,
+	// 			url:   "",
+	// 			err:   err,
+	// 		}
+	// 		return
+	// 	}
+	// }
+	// defer file.Close()
+	//////////////
+
+	uploadToStorage(ctx, buf, header.Filename)
+
+	url := header.Filename // arbitrary value for URL
+	uploadResChan <- UploadImagesRes{
+		index: index,
+		url:   url,
+		err:   nil,
+	}
+	return
+}
+
+// GCP Storage
+func uploadToStorage(ctx echo.Context, buffer *bytes.Buffer, fileName string) (string, error) {
+	c := ctx.Request().Context()
+	client, err := storage.NewClient(c)
+	if err != nil {
+		panic(err)
+	}
+	defer client.Close()
+
+	folder := "test"
+	dst := folder + "/" + fileName
+
+	storageWriter := client.Bucket(config.C.Storage.BucketName).Object(dst).NewWriter(c)
+
+	r := bytes.NewReader(buffer.Bytes())
+	if _, err = io.Copy(storageWriter, r); err != nil {
+		return "", fmt.Errorf("Upload Failed > io.Copy: %v", err)
+	}
+	if err := storageWriter.Close(); err != nil {
+		return "", fmt.Errorf("Upload Failed > Writer.Close: %v", err)
+	}
+	return "", nil
 }
 
 func processUploadedImgs(responses []UploadImagesRes) []string {
@@ -85,46 +171,4 @@ func processUploadedImgs(responses []UploadImagesRes) []string {
 	}
 
 	return urls
-}
-
-func uploadImage(wg *sync.WaitGroup, index int, header *multipart.FileHeader, uploadResChan chan UploadImagesRes) {
-	defer wg.Done()
-	// defer os.Remove(header.Filename)
-
-	multipartFile, err := header.Open()
-	if err != nil {
-		log.Fatal(err)
-		uploadResChan <- UploadImagesRes{
-			index: index,
-			url:   "",
-			err:   err,
-		}
-		return
-	}
-	defer multipartFile.Close()
-
-	file, ok := multipartFile.(*os.File)
-	if !ok {
-		if err != nil {
-			var err error = errors.New("Could not convert multipart.File to os.File")
-			log.Fatal(err)
-			uploadResChan <- UploadImagesRes{
-				index: index,
-				url:   "",
-				err:   err,
-			}
-			return
-		}
-	}
-	defer file.Close()
-
-	// TODO : upload file to remote storage like GCP, AWS, AZURE... and fetch file path url
-
-	url := file.Name() // arbitrary value for URL
-	uploadResChan <- UploadImagesRes{
-		index: index,
-		url:   url,
-		err:   nil,
-	}
-	return
 }

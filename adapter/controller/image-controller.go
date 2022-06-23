@@ -29,7 +29,7 @@ func (i *ImageMetadataController) UploadImages(c echo.Context) error {
 	}
 	fileHeaders := form.File["files"]
 
-	urls := i.imageUsecase.UploadImages(fileHeaders)
+	urls := i.imageUsecase.UploadImages(fileHeaders, c)
 
 	return c.JSONPretty(http.StatusOK, map[string]interface {
 	}{

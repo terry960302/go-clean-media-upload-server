@@ -22,7 +22,7 @@ type ImageMetadataRepository interface {
 }
 
 type ImageMetadataUsecase interface {
-	UploadImages(fileHeaders []*multipart.FileHeader) []string
+	UploadImages(fileHeaders []*multipart.FileHeader, ctx echo.Context) []string
 }
 
 type ImageMetadataContrller interface {

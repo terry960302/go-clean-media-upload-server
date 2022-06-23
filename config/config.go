@@ -23,8 +23,13 @@ type config struct {
 	Server struct {
 		Port string
 	}
+	Storage struct {
+		ProjectID  string
+		BucketName string
+	}
 }
 
+// global variable
 var C config
 
 func ReadConfig() {
@@ -32,8 +37,7 @@ func ReadConfig() {
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	// viper.AddConfigPath(filepath.Join("$GOPATH", "src", "github.com", "terry960302", "media-upload-server", "config")) // set remote file
-	viper.AddConfigPath("/config.yaml") // local file
+	viper.AddConfigPath("config") // local file
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
