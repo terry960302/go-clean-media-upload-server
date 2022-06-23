@@ -1,6 +1,10 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"github.com/labstack/echo/v4"
+)
 
 type MediaMetadata struct {
 	ID        uint       `gorm:"primary_key" json:"id"`
@@ -9,3 +13,14 @@ type MediaMetadata struct {
 }
 
 // media > image, video
+
+type MediaMetadataRepository interface {
+	GetAll() ([]MediaMetadata, error)
+}
+type MediaMetadataUsecase interface {
+	GetAllMedia() ([]MediaMetadata, error)
+}
+
+type MediaMetadataController interface {
+	GetAllMedia(c echo.Context) error
+}

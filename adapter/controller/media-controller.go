@@ -1,16 +1,17 @@
 package controller
 
-type mediaCtrl struct {
+import (
+	"media-upload-server/domain"
+	"media-upload-server/usecase"
+)
+
+type MediaMetadataController struct {
+	domain.MediaMetadataController
+	mediaUsecase usecase.MediaMetadataUsecase
 }
 
-type MediaController interface {
-	GetMedia() error
-	CreateMedia() error
-}
-
-func testFunc() {
-	// var mediaService service.MediaServiceImpl = service.MediaServiceImpl(s)
-
-	// mediaService.GetAllMedia()
-
+func NewMediaMetadataController(mediaUsecase usecase.MediaMetadataUsecase) *MediaMetadataController {
+	ctrl := &MediaMetadataController{mediaUsecase: mediaUsecase}
+	ctrl.MediaMetadataController = interface{}(ctrl).(*MediaMetadataController)
+	return ctrl
 }

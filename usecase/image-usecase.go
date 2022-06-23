@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"media-upload-server/adapter/repository"
+	"media-upload-server/domain"
 	"mime/multipart"
 	"os"
 	"sort"
@@ -12,11 +13,14 @@ import (
 )
 
 type ImageMetadataUsecase struct {
+	domain.ImageMetadataUsecase
 	imageRepo repository.ImageMetadataRepository
 }
 
 func NewImageUsecase(imageRepo repository.ImageMetadataRepository) *ImageMetadataUsecase {
-	return &ImageMetadataUsecase{imageRepo: imageRepo}
+	usecase := &ImageMetadataUsecase{imageRepo: imageRepo}
+	usecase.ImageMetadataUsecase = interface{}(usecase).(*ImageMetadataUsecase)
+	return usecase
 }
 
 type UploadImagesRes struct {

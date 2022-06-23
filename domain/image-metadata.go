@@ -3,6 +3,8 @@ package domain
 import (
 	"mime/multipart"
 	"time"
+
+	"github.com/labstack/echo/v4"
 )
 
 type ImageMetadata struct {
@@ -21,4 +23,8 @@ type ImageMetadataRepository interface {
 
 type ImageMetadataUsecase interface {
 	UploadImages(fileHeaders []*multipart.FileHeader) []string
+}
+
+type ImageMetadataContrller interface {
+	UploadImages(c echo.Context) error
 }

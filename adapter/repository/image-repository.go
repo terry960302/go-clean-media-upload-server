@@ -7,11 +7,14 @@ import (
 )
 
 type ImageMetadataRepository struct {
+	domain.ImageMetadataRepository
 	DB *gorm.DB
 }
 
 func NewImageMetadataRepository(db *gorm.DB) *ImageMetadataRepository {
-	return &ImageMetadataRepository{DB: db}
+	repo := &ImageMetadataRepository{DB: db}
+	repo.ImageMetadataRepository = interface{}(repo).(*ImageMetadataRepository)
+	return repo
 }
 
 func (ir *ImageMetadataRepository) GetAll() ([]domain.ImageMetadata, error) {

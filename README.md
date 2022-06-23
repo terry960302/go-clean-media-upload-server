@@ -17,7 +17,11 @@
 
 ## 2. Golang Clean-Arch
 
-`reference` : https://manakuro.medium.com/clean-architecture-with-go-bce409427d31
+`reference`
+
+- https://manakuro.medium.com/clean-architecture-with-go-bce409427d31
+- https://github.com/bxcodec/go-clean-arch/tree/9e174b8b0bbdfbab69bc293bb2905b2bb622155c
+- https://github.com/evrone/go-clean-template/tree/3a9a40d72d21bb2d620fa76c4c3214e956a2e2e5
 
 ### What is Clean Architecture?
 

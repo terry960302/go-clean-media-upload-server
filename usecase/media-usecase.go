@@ -1,27 +1,21 @@
 package usecase
 
 import (
-	"gorm.io/gorm"
+	"media-upload-server/adapter/repository"
+	"media-upload-server/domain"
 )
 
-// handle business logic of 'media'
-type MediaServiceImpl struct {
-	DB *gorm.DB
+type MediaMetadataUsecase struct {
+	domain.MediaMetadataUsecase
+	mediaRepo repository.MediaMetadataRepository
 }
 
-type MediaService interface {
-	GetAllMedia()
+func NewMediaMetadataUsecase(mediaRepo repository.MediaMetadataRepository) *MediaMetadataUsecase {
+	usecase := &MediaMetadataUsecase{mediaRepo: mediaRepo}
+	usecase.MediaMetadataUsecase = interface{}(usecase).(*MediaMetadataUsecase)
+	return usecase
 }
 
-func NewMediaService(db *gorm.DB) *MediaServiceImpl {
-	return &MediaServiceImpl{
-		DB: db,
-	}
-}
-
-func (m *MediaServiceImpl) GetAllMedia() error {
-	// db := m.DB
-
-	return nil
-
+func (m *MediaMetadataUsecase) GetAllMedia() ([]domain.MediaMetadata, error) {
+	return nil, nil
 }
