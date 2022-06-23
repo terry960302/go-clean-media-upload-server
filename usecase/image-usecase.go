@@ -46,7 +46,6 @@ func (i *ImageMetadataUsecase) UploadImages(fileHeaders []*multipart.FileHeader)
 		close(uploadResChan)
 	}()
 
-	// 업로드 후
 	for {
 		select {
 		case res := <-uploadResChan:
@@ -69,7 +68,7 @@ func processUploadedImgs(responses []UploadImagesRes) []string {
 	// logging error
 	for _, res := range responses {
 		if res.err != nil {
-			log.Fatal("%s th file error occured : %s", string(res.index), res.err.Error())
+			log.Fatalf("%s th file error occured : %s", string(res.index), res.err.Error())
 		} else {
 			rawRes = append(rawRes, res)
 		}
@@ -119,7 +118,7 @@ func uploadImage(wg *sync.WaitGroup, index int, header *multipart.FileHeader, up
 	}
 	defer file.Close()
 
-	// TODO : send file  to remote storage like GCP, AWS, AZURE... and fetch file url
+	// TODO : upload file to remote storage like GCP, AWS, AZURE... and fetch file path url
 
 	url := file.Name() // arbitrary value for URL
 	uploadResChan <- UploadImagesRes{
