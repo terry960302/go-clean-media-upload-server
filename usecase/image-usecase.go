@@ -14,7 +14,10 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/labstack/echo/v4"
+	"google.golang.org/api/option"
 )
+
+const prefix = "https://storage.googleapis.com/"
 
 type ImageMetadataUsecase struct {
 	domain.ImageMetadataUsecase
@@ -59,15 +62,14 @@ func (i *ImageMetadataUsecase) UploadImages(fileHeaders []*multipart.FileHeader,
 				urls := processUploadedImgs(responses)
 				return urls
 			}
-		default:
-			fmt.Println("[UploadImages] No channel is ready")
+			// default:
+			// 	fmt.Println("[UploadImages] No channel is ready")
 		}
 	}
 }
 
 func uploadImage(ctx echo.Context, wg *sync.WaitGroup, index int, header *multipart.FileHeader, uploadResChan chan UploadImagesRes) {
 	defer wg.Done()
-	// defer os.Remove(header.Filename)
 
 	multipartFile, err := header.Open()
 	if err != nil {
@@ -112,9 +114,18 @@ func uploadImage(ctx echo.Context, wg *sync.WaitGroup, index int, header *multip
 	// defer file.Close()
 	//////////////
 
-	uploadToStorage(ctx, buf, header.Filename)
+	url, err := uploadToStorage(ctx, buf, header.Filename)
+	if err != nil {
+		log.Fatal(err)
+		uploadResChan <- UploadImagesRes{
+			index: index,
+			url:   "",
+			err:   err,
+		}
+		return
 
-	url := header.Filename // arbitrary value for URL
+	}
+
 	uploadResChan <- UploadImagesRes{
 		index: index,
 		url:   url,
@@ -126,25 +137,26 @@ func uploadImage(ctx echo.Context, wg *sync.WaitGroup, index int, header *multip
 // GCP Storage
 func uploadToStorage(ctx echo.Context, buffer *bytes.Buffer, fileName string) (string, error) {
 	c := ctx.Request().Context()
-	client, err := storage.NewClient(c)
+	client, err := storage.NewClient(c, option.WithCredentialsFile((config.C.Storage.CredPath)))
 	if err != nil {
 		panic(err)
 	}
 	defer client.Close()
 
-	folder := "test"
-	dst := folder + "/" + fileName
+	dir := "test"
+	dst := dir + "/" + fileName
 
 	storageWriter := client.Bucket(config.C.Storage.BucketName).Object(dst).NewWriter(c)
 
-	r := bytes.NewReader(buffer.Bytes())
-	if _, err = io.Copy(storageWriter, r); err != nil {
-		return "", fmt.Errorf("Upload Failed > io.Copy: %v", err)
+	if _, err := storageWriter.Write(buffer.Bytes()); err != nil {
+		return "", fmt.Errorf("Upload Failed > storageWriter.Write: %v", err)
 	}
 	if err := storageWriter.Close(); err != nil {
 		return "", fmt.Errorf("Upload Failed > Writer.Close: %v", err)
 	}
-	return "", nil
+
+	url := prefix + config.C.Storage.BucketName + "/" + dst
+	return url, nil
 }
 
 func processUploadedImgs(responses []UploadImagesRes) []string {
@@ -154,7 +166,7 @@ func processUploadedImgs(responses []UploadImagesRes) []string {
 	// logging error
 	for _, res := range responses {
 		if res.err != nil {
-			log.Fatalf("%s th file error occured : %s", string(res.index), res.err.Error())
+			log.Fatalf("%s th file error occured : %s", fmt.Sprint(res.index), res.err.Error())
 		} else {
 			rawRes = append(rawRes, res)
 		}

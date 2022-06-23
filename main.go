@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-
+	config.ReadConfig()
 	db := infrastructure.NewPostgresql()
 	appRepo := repository.NewAppRepository(db)
 	appUsecase := usecase.NewAppUsecase(appRepo.ImageRepo, appRepo.MediaRepo)

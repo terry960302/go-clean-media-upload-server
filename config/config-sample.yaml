@@ -1,0 +1,15 @@
+database:
+  user: root
+  password: 1234
+  net: tcp
+  host: localhost
+  port: 5432
+  dbname: myDB
+
+server:
+  port: 8080
+
+storage:
+  cred-path: config/something-key.json
+  project-id: my-project
+  bucket-name: my-bucket

@@ -24,8 +24,9 @@ type config struct {
 		Port string
 	}
 	Storage struct {
-		ProjectID  string
-		BucketName string
+		CredPath   string `mapstructure:"cred-path"`
+		ProjectID  string `mapstructure:"project-id"`
+		BucketName string `mapstructure:"bucket-name"`
 	}
 }
 

@@ -9,7 +9,6 @@ import (
 )
 
 func NewPostgresql() *gorm.DB {
-	config.ReadConfig()
 	DSN := "host=" + config.C.Database.Host +
 		" user=" + config.C.Database.User +
 		" password=" + config.C.Database.Password +

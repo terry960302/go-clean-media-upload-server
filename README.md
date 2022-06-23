@@ -15,6 +15,22 @@
 
 ---
 
+### Setup
+
+#### GCP Storage
+
+`Update access of GCP Storage`
+
+1. Navigate to 'IAM & Admin' > 'Service Account'
+2. Create service account
+
+   a. Set 'Cloud Storage' > 'Storage Admin' access
+
+3. Click Manage Key
+4. Move to 'Key' tab
+5. Click 'Add Key' (JSON file will be generated)
+6. Copy JSON & Paste JSON under 'config' directory
+
 ## 2. Golang Clean-Arch
 
 `reference`
