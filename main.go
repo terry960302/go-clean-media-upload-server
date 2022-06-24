@@ -11,6 +11,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// @title Go-Clean-Media-Upload-Server
+// @version 1.0
+// @description Clean Arch + Media Upload
+// @host localhost:8080
+// @BasePath /
 func main() {
 	config.ReadConfig()
 	db := infrastructure.NewPostgresql()

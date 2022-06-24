@@ -9,7 +9,7 @@ type AppUsecase struct {
 
 func NewAppUsecase(imageRepo repository.ImageMetadataRepository, mediaRepo repository.MediaMetadataRepository) *AppUsecase {
 	return &AppUsecase{
-		ImageUsecase: *NewImageUsecase(imageRepo),
+		ImageUsecase: *NewImageUsecase(imageRepo, mediaRepo),
 		MediaUsecase: *NewMediaMetadataUsecase(mediaRepo),
 	}
 }

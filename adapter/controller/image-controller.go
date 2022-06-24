@@ -21,6 +21,14 @@ func NewImageMetadataController(imgUsecase usecase.ImageMetadataUsecase) *ImageM
 	return ctrl
 }
 
+// UploadImages godoc
+// @Summary upload images
+// @Description upload images
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router / [post]
 func (i *ImageMetadataController) UploadImages(c echo.Context) error {
 
 	form, err := c.MultipartForm()

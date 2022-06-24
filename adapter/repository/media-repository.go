@@ -35,3 +35,16 @@ func (m *MediaMetadataRepository) GetAll() ([]domain.MediaMetadata, error) {
 
 	return media, nil
 }
+
+func (m *MediaMetadataRepository) Create(media domain.MediaMetadata) (uint, error) {
+	trx := m.DB.Create(&media)
+
+	err := trx.Error
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+
+	fmt.Printf("%s MediaImage created", fmt.Sprint(trx.RowsAffected))
+	return uint(media.ID), nil
+}

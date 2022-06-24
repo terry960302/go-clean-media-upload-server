@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+	"log"
 	"media-upload-server/domain"
 
 	"gorm.io/gorm"
@@ -17,6 +19,18 @@ func NewImageMetadataRepository(db *gorm.DB) *ImageMetadataRepository {
 	return repo
 }
 
-func (ir *ImageMetadataRepository) GetAll() ([]domain.ImageMetadata, error) {
+func (i *ImageMetadataRepository) GetAll() ([]domain.ImageMetadata, error) {
 	return []domain.ImageMetadata{}, nil
+}
+
+func (i *ImageMetadataRepository) Create(image domain.ImageMetadata) (uint, error) {
+	trx := i.DB.Create(&image)
+	err := trx.Error
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+
+	fmt.Printf("%s ImageMetadata is created", fmt.Sprint(trx.RowsAffected))
+	return uint(image.ID), nil
 }

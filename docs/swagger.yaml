@@ -1,0 +1,24 @@
+host: localhost:8080
+info:
+  contact: {}
+  description: Clean Arch + Media Upload
+  title: Go-Clean-Media-Upload-Server
+  version: "1.0"
+paths:
+  /:
+    post:
+      consumes:
+      - '*/*'
+      description: upload images
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: upload images
+      tags:
+      - root
+swagger: "2.0"

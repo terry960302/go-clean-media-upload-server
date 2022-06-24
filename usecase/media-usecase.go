@@ -19,3 +19,7 @@ func NewMediaMetadataUsecase(mediaRepo repository.MediaMetadataRepository) *Medi
 func (m *MediaMetadataUsecase) GetAllMedia() ([]domain.MediaMetadata, error) {
 	return nil, nil
 }
+
+func (m *MediaMetadataUsecase) CreateMediaImage() error {
+	return nil
+}
