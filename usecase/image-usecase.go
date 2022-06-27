@@ -1,11 +1,12 @@
 package usecase
 
 import (
-	"bufio"
 	"fmt"
 	"image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"os"
@@ -44,7 +45,7 @@ type UploadImagesRes struct {
 type ImageConfig struct {
 	Width  int
 	Height int
-	Volume int
+	Volume int64
 	Format string
 }
 
@@ -124,6 +125,7 @@ func (i *ImageMetadataUsecase) uploadImage(ctx echo.Context, wg *sync.WaitGroup,
 
 	defer multipartFile.Close()
 
+	// buffer 로 처리
 	// buf := bytes.NewBuffer(nil)
 	// if _, err := io.Copy(buf, multipartFile); err != nil {
 	// 	uploadResChan <- UploadImagesRes{
@@ -210,10 +212,8 @@ func uploadToStorage(ctx echo.Context, file *os.File, fileName string) (string, 
 	dst := dir + "/" + fileName
 
 	storageWriter := client.Bucket(config.C.Storage.BucketName).Object(dst).NewWriter(c)
+	defer storageWriter.Close()
 
-	// if _, err := storageWriter.Write(buffer.Bytes()); err != nil {
-	// 	return "", fmt.Errorf("Upload Failed > storageWriter.Write: %v", err)
-	// }
 	if _, err = io.Copy(storageWriter, file); err != nil {
 		return "", fmt.Errorf("Upload Failed > io.Copy: %v", err)
 	}
@@ -253,36 +253,38 @@ func processUploadedImgs(responses []UploadImagesRes) []string {
 }
 
 func getImageConfig(header *multipart.FileHeader, file *os.File) (ImageConfig, error) {
-
-	filename := header.Filename
-	format := header.Header["Content-Type"][0]
-
-	// b := buffer.Bytes()
-	// reader := bytes.NewReader(b)
-	reader := bufio.NewReader(file)
-
-	imgConfig, _, err := image.DecodeConfig(reader)
-	if err != nil {
+	// File read index could set to end because of previous functions related to os.File
+	// Set file read index to begining before run 'Decode' function
+	if _, err := file.Seek(0, 0); err != nil {
 		log.Fatal(err)
 		return ImageConfig{}, err
 	}
-	b, err := ioutil.ReadFile(header.Filename)
+
+	fileInfo, err := file.Stat()
 	if err != nil {
 		log.Fatal(err)
 		return ImageConfig{}, err
 	}
 
-	width := imgConfig.Width
-	height := imgConfig.Height
-	volume := len(b) / 1024 // KB
+	imgConfig, format, err := image.Decode(file)
+	if err != nil {
+		log.Fatal(err)
+		return ImageConfig{}, err
+	}
 
-	fmt.Printf("[ImgConfig Extracted] file : %s", filename)
+	width := imgConfig.Bounds().Dx()
+	height := imgConfig.Bounds().Dy()
+	volume := fileInfo.Size() / 1024 // KB
 
-	return ImageConfig{
+	config := ImageConfig{
 		Width:  width,
 		Height: height,
 		Format: format,
 		Volume: volume,
-	}, nil
+	}
+
+	fmt.Printf("[ImgConfig] file : %s", config)
+
+	return config, nil
 
 }

@@ -26,5 +26,4 @@ func main() {
 	e := echo.New()
 	e = router.NewRouter(e, *appCtrl)
 	e.Logger.Fatal(e.Start(":" + config.C.Server.Port))
-
 }
