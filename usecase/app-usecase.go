@@ -1,6 +1,6 @@
 package usecase
 
-import "media-upload-server/adapter/repository"
+import "github.com/terry960302/go-clean-media-upload-server/adapter/repository"
 
 type AppUsecase struct {
 	ImageUsecase ImageMetadataUsecase

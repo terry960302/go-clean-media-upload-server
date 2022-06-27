@@ -1,6 +1,6 @@
 package controller
 
-import "media-upload-server/usecase"
+import "github.com/terry960302/go-clean-media-upload-server/usecase"
 
 type AppController struct {
 	ImageCtrl ImageMetadataController

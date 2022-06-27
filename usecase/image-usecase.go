@@ -7,13 +7,14 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"media-upload-server/adapter/repository"
-	"media-upload-server/config"
-	"media-upload-server/domain"
 	"mime/multipart"
 	"os"
 	"sort"
 	"sync"
+
+	"github.com/terry960302/go-clean-media-upload-server/adapter/repository"
+	"github.com/terry960302/go-clean-media-upload-server/config"
+	"github.com/terry960302/go-clean-media-upload-server/domain"
 
 	"cloud.google.com/go/storage"
 	"github.com/labstack/echo/v4"

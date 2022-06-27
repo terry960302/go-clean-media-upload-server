@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"media-upload-server/adapter/repository"
-	"media-upload-server/domain"
+	"github.com/terry960302/go-clean-media-upload-server/adapter/repository"
+	"github.com/terry960302/go-clean-media-upload-server/domain"
 )
 
 type MediaMetadataUsecase struct {

@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"media-upload-server/domain"
-	"media-upload-server/usecase"
+	"github.com/terry960302/go-clean-media-upload-server/domain"
+	"github.com/terry960302/go-clean-media-upload-server/usecase"
 )
 
 type MediaMetadataController struct {

@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"media-upload-server/domain"
-	"media-upload-server/usecase"
 	"net/http"
+
+	"github.com/terry960302/go-clean-media-upload-server/domain"
+	"github.com/terry960302/go-clean-media-upload-server/usecase"
 
 	"github.com/labstack/echo/v4"
 )

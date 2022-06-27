@@ -1,12 +1,12 @@
 package main
 
 import (
-	"media-upload-server/adapter/controller"
-	"media-upload-server/adapter/repository"
-	"media-upload-server/config"
-	infrastructure "media-upload-server/infrastructure/datastore"
-	"media-upload-server/infrastructure/router"
-	"media-upload-server/usecase"
+	"github.com/terry960302/go-clean-media-upload-server/adapter/controller"
+	"github.com/terry960302/go-clean-media-upload-server/adapter/repository"
+	"github.com/terry960302/go-clean-media-upload-server/config"
+	infrastructure "github.com/terry960302/go-clean-media-upload-server/infrastructure/datastore"
+	"github.com/terry960302/go-clean-media-upload-server/infrastructure/router"
+	"github.com/terry960302/go-clean-media-upload-server/usecase"
 
 	"github.com/labstack/echo/v4"
 )

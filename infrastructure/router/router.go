@@ -1,7 +1,7 @@
 package router
 
 import (
-	"media-upload-server/adapter/controller"
+	"github.com/terry960302/go-clean-media-upload-server/adapter/controller"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

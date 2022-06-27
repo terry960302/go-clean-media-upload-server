@@ -3,7 +3,8 @@ package repository
 import (
 	"fmt"
 	"log"
-	"media-upload-server/domain"
+
+	"github.com/terry960302/go-clean-media-upload-server/domain"
 
 	"gorm.io/gorm"
 )

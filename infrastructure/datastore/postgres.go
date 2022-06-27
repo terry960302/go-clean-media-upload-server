@@ -2,7 +2,8 @@ package infrastructure
 
 import (
 	"log"
-	"media-upload-server/config"
+
+	"github.com/terry960302/go-clean-media-upload-server/config"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
