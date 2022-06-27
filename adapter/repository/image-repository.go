@@ -32,6 +32,6 @@ func (i *ImageMetadataRepository) Create(image domain.ImageMetadata) (uint, erro
 		return 0, err
 	}
 
-	fmt.Printf("%s ImageMetadata is created", fmt.Sprint(trx.RowsAffected))
+	fmt.Printf("%s ImageMetadata is created\n", fmt.Sprint(trx.RowsAffected))
 	return uint(image.ID), nil
 }

@@ -7,7 +7,8 @@ import (
 
 type MediaMetadata struct {
 	gorm.Model
-	Url string `json:"url"`
+	MediaType string `json:"media_type"` // image, video
+	Url       string `json:"url"`
 }
 
 // media > image, video

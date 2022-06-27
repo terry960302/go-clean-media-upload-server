@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"fmt"
 	"image"
 	_ "image/gif"
@@ -52,7 +53,8 @@ type ImageConfig struct {
 func (i *ImageMetadataUsecase) SaveImageMedia(url string, config ImageConfig) error {
 
 	media := domain.MediaMetadata{
-		Url: url,
+		Url:       url,
+		MediaType: "image",
 	}
 	mediaId, err := i.mediaRepo.Create(media)
 	if err != nil {
@@ -73,7 +75,7 @@ func (i *ImageMetadataUsecase) SaveImageMedia(url string, config ImageConfig) er
 		return err
 	}
 
-	fmt.Printf("%s img metadata is created", fmt.Sprint(imgId))
+	fmt.Printf("%s img metadata is created\n", fmt.Sprint(imgId))
 	return nil
 }
 
@@ -125,16 +127,6 @@ func (i *ImageMetadataUsecase) uploadImage(ctx echo.Context, wg *sync.WaitGroup,
 
 	defer multipartFile.Close()
 
-	// buffer 로 처리
-	// buf := bytes.NewBuffer(nil)
-	// if _, err := io.Copy(buf, multipartFile); err != nil {
-	// 	uploadResChan <- UploadImagesRes{
-	// 		index: index,
-	// 		url:   "",
-	// 		err:   err,
-	// 	}
-	// 	return
-	// }
 	file, err := os.Create(header.Filename)
 	if err != nil {
 		log.Fatal(err)
@@ -156,9 +148,16 @@ func (i *ImageMetadataUsecase) uploadImage(ctx echo.Context, wg *sync.WaitGroup,
 		}
 		return
 	}
-	defer os.Remove(header.Filename)
+	defer func() {
+		path := header.Filename
+		if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+			return
+		}
+		os.Remove(path)
+		return
+	}()
 
-	imgConfig, err := getImageConfig(header, file)
+	imgConfig, err := getImageConfig(file)
 	if err != nil {
 		log.Fatal(err)
 		uploadResChan <- UploadImagesRes{
@@ -169,7 +168,7 @@ func (i *ImageMetadataUsecase) uploadImage(ctx echo.Context, wg *sync.WaitGroup,
 		return
 	}
 
-	url, err := uploadToStorage(ctx, file, header.Filename)
+	url, err := uploadToStorage(ctx, file)
 	if err != nil {
 		log.Fatal(err)
 		uploadResChan <- UploadImagesRes{
@@ -200,7 +199,7 @@ func (i *ImageMetadataUsecase) uploadImage(ctx echo.Context, wg *sync.WaitGroup,
 }
 
 // Uplaod to GCP Storage
-func uploadToStorage(ctx echo.Context, file *os.File, fileName string) (string, error) {
+func uploadToStorage(ctx echo.Context, file *os.File) (string, error) {
 	c := ctx.Request().Context()
 	client, err := storage.NewClient(c, option.WithCredentialsFile((config.C.Storage.CredPath)))
 	if err != nil {
@@ -209,7 +208,7 @@ func uploadToStorage(ctx echo.Context, file *os.File, fileName string) (string, 
 	defer client.Close()
 
 	dir := "test"
-	dst := dir + "/" + fileName
+	dst := dir + "/" + file.Name()
 
 	storageWriter := client.Bucket(config.C.Storage.BucketName).Object(dst).NewWriter(c)
 	defer storageWriter.Close()
@@ -222,7 +221,7 @@ func uploadToStorage(ctx echo.Context, file *os.File, fileName string) (string, 
 	}
 
 	url := prefix + config.C.Storage.BucketName + "/" + dst
-	fmt.Printf("[Storage Uploaded] file : %s", fileName)
+	fmt.Printf("[Completed] storage image uploaded : %s\n", file.Name())
 	return url, nil
 }
 
@@ -249,10 +248,12 @@ func processUploadedImgs(responses []UploadImagesRes) []string {
 		urls = append(urls, res.url)
 	}
 
+	fmt.Println("[Completed] process images output")
+
 	return urls
 }
 
-func getImageConfig(header *multipart.FileHeader, file *os.File) (ImageConfig, error) {
+func getImageConfig(file *os.File) (ImageConfig, error) {
 	// File read index could set to end because of previous functions related to os.File
 	// Set file read index to begining before run 'Decode' function
 	if _, err := file.Seek(0, 0); err != nil {
@@ -283,7 +284,7 @@ func getImageConfig(header *multipart.FileHeader, file *os.File) (ImageConfig, e
 		Volume: volume,
 	}
 
-	fmt.Printf("[ImgConfig] file : %s", config)
+	fmt.Printf("[Completed] file config extracted: %v\n", config)
 
 	return config, nil
 

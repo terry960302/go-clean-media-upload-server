@@ -27,7 +27,7 @@ func (m *MediaMetadataRepository) GetAll() ([]domain.MediaMetadata, error) {
 	media := []domain.MediaMetadata{}
 
 	result := m.DB.Find(&media)
-	fmt.Printf("%s data loaded", fmt.Sprint(result.RowsAffected))
+	fmt.Printf("%s data loaded\n", fmt.Sprint(result.RowsAffected))
 
 	if err := result.Error; err != nil {
 		log.Fatal(err)
@@ -46,6 +46,6 @@ func (m *MediaMetadataRepository) Create(media domain.MediaMetadata) (uint, erro
 		return 0, err
 	}
 
-	fmt.Printf("%s MediaImage created", fmt.Sprint(trx.RowsAffected))
+	fmt.Printf("%s MediaImage created\n", fmt.Sprint(trx.RowsAffected))
 	return uint(media.ID), nil
 }
