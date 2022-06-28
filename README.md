@@ -1,25 +1,27 @@
-# :D
+# Go-Clean-Meida-Upload-Server
 
-1. media-uploader
+## A Table of Contents
+
+1. Media-uploader
 2. golang clean-architecture
 
 ---
 
 ## 1. Media-Uploader
 
-### Spec
+### `Spec`
 
-- Database : Postgresql 14
+- Database : Postgresql version 14
 - Storage : GCP cloud storage
 - Framework : Echo, Gorm
 
 ---
 
-### Setup
+### `Setup`
 
 #### GCP Storage
 
-`Update access of GCP Storage`
+: should update 'create object access' to GCP storage.
 
 1. Navigate to 'IAM & Admin' > 'Service Account'
 2. Create service account
@@ -31,9 +33,15 @@
 5. Click 'Add Key' (JSON file will be generated)
 6. Copy JSON & Paste JSON under 'config' directory
 
-## 2. Golang Clean-Arch
+### `ERD`
+
+![image](https://user-images.githubusercontent.com/37768791/176164761-117e39de-1cce-4fe1-84f0-cf1ca0641249.png)
+
+## 2. Golang Clean-Architecture
 
 `reference`
+
+: made new architecture based on these references.
 
 - https://github.com/manakuro/golang-clean-architecture
 - https://github.com/bxcodec/go-clean-arch/tree/9e174b8b0bbdfbab69bc293bb2905b2bb622155c
@@ -133,7 +141,3 @@ business logic located in here.
   : output port(반환값이 통과하는 구간)
 - repository
   : store db handler as a gateway
-
-#### Registry
-
-: resolving dependencies
