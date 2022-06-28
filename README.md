@@ -1,4 +1,4 @@
-# Go-Clean-Meida-Upload-Server
+# Go-Clean-Media-Upload-Server
 
 ## A Table of Contents
 
