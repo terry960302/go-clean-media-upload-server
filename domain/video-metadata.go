@@ -10,3 +10,12 @@ type VideoMetadata struct {
 	Volume    string        `json:"volume"`
 	CreatedAt *time.Time    `json:"createdAt"`
 }
+
+type VideoMetadataController interface {
+}
+
+type VideoMetadataRepository interface {
+}
+
+type VideoMetadataUsecase interface {
+}

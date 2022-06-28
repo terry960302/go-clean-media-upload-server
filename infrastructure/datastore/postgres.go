@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/terry960302/go-clean-media-upload-server/config"
+	"github.com/terry960302/go-clean-media-upload-server/domain"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -23,6 +24,8 @@ func NewPostgresql() *gorm.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	db.AutoMigrate(&domain.MediaMetadata{}, &domain.ImageMetadata{}, &domain.VideoMetadata{})
 
 	return db
 }

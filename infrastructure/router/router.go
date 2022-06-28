@@ -12,7 +12,7 @@ func NewRouter(e *echo.Echo, c controller.AppController) *echo.Echo {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.POST("/images/upload", c.ImageCtrl.UploadImages)
+	e.POST("/media/upload", c.MediaCtrl.UploadFiles)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	return e

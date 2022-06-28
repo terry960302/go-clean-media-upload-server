@@ -7,9 +7,9 @@ type AppController struct {
 	MediaCtrl MediaMetadataController
 }
 
-func NewAppController(imageUsecase usecase.ImageMetadataUsecase, mediaUsecase usecase.MediaMetadataUsecase) *AppController {
+func NewAppController(appUsecase *usecase.AppUsecase) *AppController {
 	return &AppController{
-		ImageCtrl: *NewImageMetadataController(imageUsecase),
-		MediaCtrl: *NewMediaMetadataController(mediaUsecase),
+		ImageCtrl: *NewImageMetadataController(appUsecase.ImageUsecase),
+		MediaCtrl: *NewMediaMetadataController(appUsecase.MediaUsecase),
 	}
 }

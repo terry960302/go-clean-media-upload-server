@@ -1,12 +1,8 @@
 package controller
 
 import (
-	"net/http"
-
 	"github.com/terry960302/go-clean-media-upload-server/domain"
 	"github.com/terry960302/go-clean-media-upload-server/usecase"
-
-	"github.com/labstack/echo/v4"
 )
 
 type ImageMetadataController struct {
@@ -30,19 +26,3 @@ func NewImageMetadataController(imgUsecase usecase.ImageMetadataUsecase) *ImageM
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Router / [post]
-func (i *ImageMetadataController) UploadImages(c echo.Context) error {
-
-	form, err := c.MultipartForm()
-	if err != nil {
-		return err
-	}
-	fileHeaders := form.File["files"]
-
-	urls := i.imageUsecase.UploadImages(fileHeaders, c)
-
-	return c.JSONPretty(http.StatusOK, map[string]interface {
-	}{
-		"data":  urls,
-		"error": nil,
-	}, "  ")
-}

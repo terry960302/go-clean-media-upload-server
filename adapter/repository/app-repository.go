@@ -5,12 +5,13 @@ import "gorm.io/gorm"
 type AppRepository struct {
 	ImageRepo ImageMetadataRepository
 	MediaRepo MediaMetadataRepository
-	// VideoRepo VideoMetadataRepository
+	VideoRepo VideoMetadataRepository
 }
 
 func NewAppRepository(db *gorm.DB) *AppRepository {
 	return &AppRepository{
 		ImageRepo: *NewImageMetadataRepository(db),
 		MediaRepo: *NewMediaMetadataRepository(db),
+		VideoRepo: *NewVideoMetadataRepository(db),
 	}
 }
